@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: mariadb
+    restart: always
+    ports:
+      - ${MARIA_DB_PORT:-3306}:3306
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: "${MARIA_DB_ROOT_PASSWORD:-root}"
+
+  singlestore:
+    image: 'singlestore/cluster-in-a-box'
+    ports:
+      - ${SINGLESTORE_DB_PORT:-3307}:3306
+      - ${SINGLESTORE_WEB_UI_PORT:-9080}:8080
+    volumes:
+      - singlestore-data:/var/lib/memsql
+    environment:
+      LICENSE_KEY: "${SINGLESTORE_DB_LICENSE_KEY:?err}"
+      ROOT_PASSWORD: "${SINGLESTORE_DB_ROOT_PASSWORD:-root}"
+    restart: always
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+
+volumes:
+  mariadb-data:
+    driver: local
+  singlestore-data:
+    driver: local
